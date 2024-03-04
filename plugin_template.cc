@@ -2,7 +2,7 @@
 #include <vector>
 #include <lv2.h>
 
-#include "common.h"
+#include "irs.cc"
 
 #define FIXED_IR_URI "https://dfdx.eu/fps-plugins.lv2/fixed-ir-COLLECTION.lv2"
 
