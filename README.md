@@ -15,3 +15,11 @@ Run
 ./create.sh [name] [IR1] [IR2] .... [IRN]
 ```
 
+# Building the plugin
+
+run
+
+```
+make
+```
+
