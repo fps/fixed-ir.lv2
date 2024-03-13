@@ -91,9 +91,15 @@ static void run
     // Control eports
     const float &gain     = *the_plugin.m_ports[2];
     const float &dry_wet  = *the_plugin.m_ports[3];
-    const size_t &ir      = *the_plugin.m_ports[4];
+    int         ir        = *the_plugin.m_ports[4];
+
+    ir = std::min(std::max(0, ir), NUMBER_OF_IRS - 1);
 
     the_plugin.m_convolvers[ir].process(in, out, sample_count);
+
+    for (size_t n = 0; n < sample_count; ++n) {
+        out[n] = dry_wet * out[n] + (1.0 - dry_wet) * in[n];
+    }
 }
 
 static LV2_Descriptor plugin_descriptor = {
