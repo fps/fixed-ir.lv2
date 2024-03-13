@@ -1,51 +1,51 @@
 #include <cmath>
 #include <vector>
 #include <lv2.h>
+#include <samplerate.h>
+#include "vendored/FFTConvolver/FFTConvolver.h"
 
 #include "irs.cc"
 
 #define FIXED_IR_URI "https://dfdx.eu/fps-plugins.lv2/fixed-ir-COLLECTION.lv2"
 
-struct plugin_state
-{
-    float m_sample_rate;
-    float m_abs1;
-    float m_abs2;
-    std::vector<float> m_buffer;
-    int m_buffer_head;
-
-    plugin_state (float sample_rate) :
-        m_sample_rate (sample_rate),
-        m_buffer (2 * sample_rate, 0)
-    {
-        reset ();
-    }
-
-    void reset ()
-    {
-        m_abs1 = 0;
-        m_abs2 = 0;
-        std::fill (m_buffer.begin (), m_buffer.end (), 0.f);
-        m_buffer_head = 0;
-    }
-};
-
 struct plugin
 {
+    float m_sample_rate;
     std::vector<float *> m_ports;
+    std::vector<fftconvolver::FFTConvolver> m_convolvers;
 
-    plugin_state m_plugin_state;
-
-    plugin (float sample_rate) :
-        m_ports (8, 0),
-        m_plugin_state (sample_rate)
+    plugin (double sample_rate) :
+        m_sample_rate(sample_rate),
+        m_ports(5),
+        m_convolvers(n_IR)
     {
+        for (size_t n = 0; n < n_IR; ++n)
+        {
+            double src_ratio = sample_rate / IRs[n].sample_rate;
+            size_t size_out = std::ceil(src_ratio * IRs[n].n_samples);
+            float src_out[size_out];
+            SRC_DATA src_data = {
+                IRs[n].sample_data,
+                src_out,
+                IRs[n].n_samples,
+                (long)size_out,
+                0,
+                0,
+                0,
+                src_ratio
+            };
 
+            m_convolvers[n].init(32, IRs[n].sample_data, IRs[n].n_samples);
+        }
     }
 };
 
 static void connect_port (LV2_Handle instance, uint32_t port, void *data_location)
 {
+    if (port >= ((plugin*)instance)->m_ports.size()) {
+        return;
+    }
+
     plugin &p = *((plugin*)instance);
     p.m_ports[port] = (float*)data_location;
 }
@@ -64,7 +64,7 @@ LV2_Handle instantiate
 
 static void activate (LV2_Handle instance)
 {
-    ((plugin*)instance)->m_plugin_state.reset ();
+
 }
 
 static void cleanup(LV2_Handle instance)
@@ -81,45 +81,15 @@ static void run
 ) 
 {
     plugin &the_plugin = *((plugin*)instance);
-    plugin_state &state = the_plugin.m_plugin_state;
 
     // Audio ports
     const float *in       =  the_plugin.m_ports[0];
     float       *out      =  the_plugin.m_ports[1];
 
     // Control eports
-    const float &t1       = *the_plugin.m_ports[2];
-    const float &t2       = *the_plugin.m_ports[3];
-    const float &strength = *the_plugin.m_ports[4];
-    const float &delay    = *the_plugin.m_ports[5];
-    const float &maxratio = *the_plugin.m_ports[6];
-    const float &minratio = *the_plugin.m_ports[7];
-
-    const float a1 = 1.0f - expf((-1.0f/state.m_sample_rate) / (t1 / 1000.0f));
-    const float a2 = 1.0f - expf((-1.0f/state.m_sample_rate) / (t2 / 1000.0f));
-
-    for(uint32_t sample_index = 0; sample_index < sample_count; ++sample_index)
-    {
-        state.m_abs1 = a1 * fabs(in[sample_index]) + (1.0f - a1) * state.m_abs1;
-        state.m_abs2 = a2 * fabs(in[sample_index]) + (1.0f - a2) * state.m_abs2;
-
-        const float r = (EPSILON + state.m_abs1) / (EPSILON + state.m_abs2);
-        float scale = powf(1.0f / r, strength);
-
-        scale = std::max (std::min (scale, maxratio), minratio);
-
-        state.m_buffer[state.m_buffer_head] = in[sample_index];
-        
-        int buffer_tail = state.m_buffer_head - state.m_sample_rate * (delay / 1000);
-        if (buffer_tail < 0) 
-        {
-            buffer_tail += 2 * state.m_sample_rate;
-        }
-        
-        out[sample_index] = scale * state.m_buffer[buffer_tail];
-        ++state.m_buffer_head;
-        state.m_buffer_head %= state.m_buffer.size ();
-    }
+    const float &gain     = *the_plugin.m_ports[2];
+    const float &dry_wet  = *the_plugin.m_ports[3];
+    const float &ir       = *the_plugin.m_ports[4];
 }
 
 static LV2_Descriptor plugin_descriptor = {
