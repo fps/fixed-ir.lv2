@@ -23,7 +23,7 @@ struct plugin
         {
             double src_ratio = sample_rate / IRs[n].sample_rate;
             size_t size_out = std::ceil(src_ratio * IRs[n].n_samples);
-            float src_out[size_out];
+            float src_out[size_out] = { 0 };
             SRC_DATA src_data = {
                 IRs[n].sample_data,
                 src_out,
@@ -35,7 +35,9 @@ struct plugin
                 src_ratio
             };
 
-            m_convolvers[n].init(32, IRs[n].sample_data, IRs[n].n_samples);
+            int ret = src_simple(&src_data, SRC_SINC_BEST_QUALITY, 1);
+
+            m_convolvers[n].init(32, src_out, size_out);
         }
     }
 };
@@ -89,7 +91,9 @@ static void run
     // Control eports
     const float &gain     = *the_plugin.m_ports[2];
     const float &dry_wet  = *the_plugin.m_ports[3];
-    const float &ir       = *the_plugin.m_ports[4];
+    const size_t &ir      = *the_plugin.m_ports[4];
+
+    the_plugin.m_convolvers[ir].process(in, out, sample_count);
 }
 
 static LV2_Descriptor plugin_descriptor = {

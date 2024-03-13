@@ -15,4 +15,6 @@ system(sprintf("cat plugin_template.ttl | sed -e 's/COLLECTION/%s/g' | sed -e 's
 
 system(sprintf("cat plugin_template.cc | sed -e 's/COLLECTION/%s/g' | sed -e 's/NUMBER_OF_IRS/%d/g' > plugin.cc", arg_list{1}, number_of_irs));
 
+system(sprintf("cat makefile_template | sed -e 's/COLLECTION/%s/g' | sed -e 's/NUMBER_OF_IRS/%d/g' > makefile", arg_list{1}, number_of_irs));
+
 
