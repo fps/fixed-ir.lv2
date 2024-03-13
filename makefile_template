@@ -2,4 +2,4 @@ FFTCONVOLVER_SOURCES = vendored/FFTConvolver/AudioFFT.cpp vendored/FFTConvolver/
 
 
 plugin.so: plugin.cc
-	g++ -g -O2 -o fixed-ir-COLLECTION.so -shared -fPIC plugin.cc ${FFTCONVOLVER_SOURCES} -lsamplerate
+	g++ -g -O2 -o PLUGIN_DIR/fixed-ir-COLLECTION.so -shared -fPIC plugin.cc ${FFTCONVOLVER_SOURCES} -lsamplerate
