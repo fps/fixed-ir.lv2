@@ -4,7 +4,7 @@
 #include <samplerate.h>
 #include "vendored/FFTConvolver/FFTConvolver.h"
 
-#include "irs.cc"
+#include "irs.c"
 
 #define FIXED_IR_URI "https://dfdx.eu/fps-plugins.lv2/fixed-ir-COLLECTION.lv2"
 
@@ -21,13 +21,13 @@ struct plugin
     {
         for (size_t n = 0; n < n_IR; ++n)
         {
-            double src_ratio = sample_rate / IRs[n].sample_rate;
-            size_t size_out = std::ceil(src_ratio * IRs[n].n_samples);
+            double src_ratio = sample_rate / IRs[n]->sample_rate;
+            size_t size_out = std::ceil(src_ratio * IRs[n]->n_samples);
             float src_out[size_out] = { 0 };
             SRC_DATA src_data = {
-                IRs[n].sample_data,
+                IRs[n]->sample_data,
                 src_out,
-                IRs[n].n_samples,
+                IRs[n]->n_samples,
                 (long)size_out,
                 0,
                 0,

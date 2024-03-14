@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 ARGS=("$@")
 
 COLLECTION="${ARGS[0]}"
@@ -30,4 +32,18 @@ done
 
 echo "};" >> "$out/irs.c"
 
-# echo IRs: "${IRS[@]}"
+echo "static unsigned n_IR = ${number_of_irs};" >> "$out/irs.c"
+
+PLUGIN_DIR="$out"/"$out".lv2
+
+mkdir -p "$PLUGIN_DIR"
+
+cat makefile_template | sed -e "s/COLLECTION/$COLLECTION/g" | sed -e "s;PLUGIN_DIR;$out.lv2;g" > "$out"/makefile
+
+cat manifest_template.ttl | sed -e "s/COLLECTION/$COLLECTION/g" > "$PLUGIN_DIR"/manifest.ttl
+
+cat plugin_template.ttl | sed -e "s/COLLECTION/$COLLECTION/g" | sed -e "s/NUMBER_OF_IRS/$number_of_irs/g" > "$PLUGIN_DIR"/plugin.ttl
+
+cat plugin_template.cc | sed -e "s/COLLECTION/$COLLECTION/g" | sed -e "s/NUMBER_OF_IRS/$number_of_irs/g" > "$out"/plugin.cc
+
+cp -rvf vendored "$out"/

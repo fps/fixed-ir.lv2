@@ -18,24 +18,23 @@ int main(int argc, char *argv[]) {
   }
 
   if (info.channels != 1) {
-    printf("Only mono supported. Exiting\n");
+    printf("Only mono supported. Exiting.\n");
     return EXIT_FAILURE;
   }
 
   float samples[info.frames];
 
-  sf_read_float(ret, samples, info.frames);
+  sf_count_t samples_read = sf_read_float(ret, samples, info.frames);
+
+  if (samples_read != info.frames) {
+    printf("Something went wrong reading samples. Exiting.\n");
+    return EXIT_FAILURE;
+  }
 
   printf("static float sample_data%s[] = {\n", argv[2]);
 
   for (unsigned frame = 0; frame < info.frames; ++frame) {
     printf("  %.24f,\n", samples[frame]);
-    /*
-    if (frame != info.frames - 1) {
-      printf(",");
-    }
-    printf("\n");
-    */
   }
 
   printf("};\n");
