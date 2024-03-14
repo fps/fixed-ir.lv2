@@ -2,6 +2,10 @@
 
 A lv2 plugin template with associated build files to create an LV2 convolution plugin that ships with a fixed set of IRs. This is limited to mono files at the moment, since the author only needs it to ship cab IRs in a plugin host that doesn't support loading responses from files yet.
 
+Note: The generated plugin potentially crackles upon switching IRs since I chose the simplest way to implement this.
+
+Note: The generated plugin uses the uniform size partitioned convolution algorithm implemented in fftconvolver::FFTConvolver (see the code in `vendored`).
+
 # Requirements
 
 * g++, gnu make, lv2, libsndfile, libsamplerate, lilv
