@@ -24,6 +24,8 @@ Then to create plugin source code from a number of wavefiles run
 ./wavs2plugin.sh [name] [IR1] [IR2] .... [IRN]
 ```
 
+The plugin source will be created in the directory `fixed-ir-[name]` where `[name]` ist the previously chosen name.
+
 # Building the plugin
 
 run
