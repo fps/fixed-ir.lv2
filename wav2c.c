@@ -5,7 +5,7 @@
 
 int main(int argc, char *argv[]) {
   if (argc < 3) {
-    printf("Usage: wav2c filename varname\n");
+    printf("Usage: wav2c filename suffix\n");
     return EXIT_FAILURE;
   }
 
@@ -26,17 +26,21 @@ int main(int argc, char *argv[]) {
 
   sf_read_float(ret, samples, info.frames);
 
-  printf("static float %s[] = {\n", argv[2]);
+  printf("static float sample_data%s[] = {\n", argv[2]);
 
   for (unsigned frame = 0; frame < info.frames; ++frame) {
-    printf("  %.24f", samples[frame]);
+    printf("  %.24f,\n", samples[frame]);
+    /*
     if (frame != info.frames - 1) {
       printf(",");
     }
     printf("\n");
+    */
   }
 
   printf("};\n");
+
+  printf ("struct IR IR%s = { %d, %ld, sample_data%s };\n", argv[2], info.samplerate, info.frames, argv[2]);
 
   return EXIT_SUCCESS;
 }
