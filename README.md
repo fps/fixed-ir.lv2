@@ -4,15 +4,20 @@ A lv2 plugin template with associated build files to create an LV2 convolution p
 
 # Requirements
 
-* For generating the plugin source code from a number of wavefiles: GNU Octave and basically coreutils
-* For compiling the generated source: g++, gnu make, lv2
+* g++, gnu make, lv2, libsndfile, libsamplerate, lilv
 
 # Generating plugin source
 
-Run
+First we need to compile the helper program that converts a .wav file to a C-source:
 
 ```
-./create.sh [name] [IR1] [IR2] .... [IRN]
+make
+```
+
+Then to create plugin source code from a number of wavefiles run
+
+```
+./wavs2plugin.sh [name] [IR1] [IR2] .... [IRN]
 ```
 
 # Building the plugin
@@ -20,6 +25,9 @@ Run
 run
 
 ```
-make
+make -C fixed-ir-[name]
 ```
+
+where `[name]` is the name you have chosen in the previous step.
+
 
