@@ -93,12 +93,15 @@ static void run
     const float &dry_wet  = *the_plugin.m_ports[3];
     int         ir        = *the_plugin.m_ports[4];
 
+    float gain_factor = powf(10.0f, gain/20.0f);
+
     ir = std::min(std::max(0, ir), NUMBER_OF_IRS - 1);
 
     the_plugin.m_convolvers[ir].process(in, out, sample_count);
 
     for (size_t n = 0; n < sample_count; ++n) {
-        out[n] = dry_wet * out[n] + (1.0 - dry_wet) * in[n];
+        out[n] = dry_wet * out[n] + (1.0f - dry_wet) * in[n];
+        out[n] *= gain_factor;
     }
 }
 
