@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -xeo pipefail
 
 ARGS=("$@")
 
@@ -34,6 +34,10 @@ echo "};" >> "$out/irs.c"
 
 echo "static unsigned n_IR = ${number_of_irs};" >> "$out/irs.c"
 
+SCALE_POINTS="$(for (( index=0;index<${number_of_irs};index++ )); do IR="${IRS[$index]}"; echo -n "lv2:scalePoint [rdfs:label \"$(basename "$IR")\"; rdf:value $index]; "; done)"
+
+echo SCALE_POINTS: $SCALE_POINTS
+
 PLUGIN_DIR="$out"/"$out".lv2
 
 mkdir -p "$PLUGIN_DIR"
@@ -42,7 +46,7 @@ cat makefile_template | sed -e "s/COLLECTION/$COLLECTION/g" | sed -e "s;PLUGIN_D
 
 cat manifest_template.ttl | sed -e "s/COLLECTION/$COLLECTION/g" > "$PLUGIN_DIR"/manifest.ttl
 
-cat plugin_template.ttl | sed -e "s/COLLECTION/$COLLECTION/g" | sed -e "s/NUMBER_OF_IRS/$number_of_irs/g" > "$PLUGIN_DIR"/plugin.ttl
+cat plugin_template.ttl | sed -e "s/SCALE_POINTS/$SCALE_POINTS/g" | sed -e "s/COLLECTION/$COLLECTION/g" | sed -e "s/NUMBER_OF_IRS/$number_of_irs/g" > "$PLUGIN_DIR"/plugin.ttl
 
 cat plugin_template.cc | sed -e "s/COLLECTION/$COLLECTION/g" | sed -e "s/NUMBER_OF_IRS/$number_of_irs/g" > "$out"/plugin.cc
 
