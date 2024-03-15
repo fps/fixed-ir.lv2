@@ -21,10 +21,17 @@ make
 Then to create plugin source code from a number of wavefiles run
 
 ```
-./wavs2plugin.sh [name] [IR1] [IR2] .... [IRN]
+./fixed-ir-wavs2plugin.sh [name] [IR1] [IR2] .... [IRN]
 ```
 
-The plugin source will be created in the directory `fixed-ir-[name]` where `[name]` ist the previously chosen name.
+The plugin source will be created in the directory `fixed-ir-[name]` where `[name]` ist the previously chosen name. There is another helper script that simplifies assembling wavs from a top level directory:
+
+```
+./fixed-ir-dir2plugin.sh [name] [directory]
+```
+
+It calls `fixed-ir-wavs2plugin` with all `.wav` files it finds under `[directory]`.
+
 
 # Building the plugin
 
