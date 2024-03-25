@@ -38,7 +38,7 @@ SCALE_POINTS="$(for (( index=0;index<${number_of_irs};index++ )); do IR="${IRS[$
 
 echo SCALE_POINTS: $SCALE_POINTS
 
-my_path=$(dirname "$0")/lib/fixed-ir.lv2/
+my_path=$(dirname "$0")/../lib/fixed-ir.lv2/
 
 PLUGIN_DIR="$out"/"$out".lv2
 
