@@ -3,9 +3,9 @@ CFLAGS ?= -Wall -O3
 
 PREFIX ?= /usr/local
 
-all: wav2c
+all: fixed-ir-wav2c
 
-install: wav2c
+install: fixed-ir-wav2c
 	install -d ${PREFIX}/bin
-	install wav2c ${PREFIX}/bin
+	install fixed-ir-wav2c ${PREFIX}/bin
 	install fixed-ir*.sh ${PREFIX}/bin
