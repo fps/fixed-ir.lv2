@@ -11,4 +11,4 @@ install: fixed-ir-wav2c
 	install fixed-ir*.sh ${PREFIX}/bin/
 	install -d ${PREFIX}/lib/fixed-ir.lv2
 	install *template* ${PREFIX}/lib/fixed-ir.lv2/
-	install vendored ${PREFIX}/lib/fixed-ir.lv2/
+	cp -r vendored ${PREFIX}/lib/fixed-ir.lv2/
