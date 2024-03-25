@@ -38,16 +38,18 @@ SCALE_POINTS="$(for (( index=0;index<${number_of_irs};index++ )); do IR="${IRS[$
 
 echo SCALE_POINTS: $SCALE_POINTS
 
+my_path=$(dirname "$0")/lib/fixed-ir.lv2/
+
 PLUGIN_DIR="$out"/"$out".lv2
 
 mkdir -p "$PLUGIN_DIR"
 
-cat makefile_template | sed -e "s/COLLECTION/$COLLECTION/g" | sed -e "s;PLUGIN_DIR;$out.lv2;g" > "$out"/makefile
+cat "$my_path"/makefile_template | sed -e "s/COLLECTION/$COLLECTION/g" | sed -e "s;PLUGIN_DIR;$out.lv2;g" > "$out"/makefile
 
-cat manifest_template.ttl | sed -e "s/COLLECTION/$COLLECTION/g" > "$PLUGIN_DIR"/manifest.ttl
+cat "$my_path"/manifest_template.ttl | sed -e "s/COLLECTION/$COLLECTION/g" > "$PLUGIN_DIR"/manifest.ttl
 
-cat plugin_template.ttl | sed -e "s/SCALE_POINTS/$SCALE_POINTS/g" | sed -e "s/COLLECTION/$COLLECTION/g" | sed -e "s/NUMBER_OF_IRS/$number_of_irs/g" > "$PLUGIN_DIR"/plugin.ttl
+cat "$my_path"/plugin_template.ttl | sed -e "s/SCALE_POINTS/$SCALE_POINTS/g" | sed -e "s/COLLECTION/$COLLECTION/g" | sed -e "s/NUMBER_OF_IRS/$number_of_irs/g" > "$PLUGIN_DIR"/plugin.ttl
 
-cat plugin_template.cc | sed -e "s/COLLECTION/$COLLECTION/g" | sed -e "s/NUMBER_OF_IRS/$number_of_irs/g" > "$out"/plugin.cc
+cat "$my_path"/plugin_template.cc | sed -e "s/COLLECTION/$COLLECTION/g" | sed -e "s/NUMBER_OF_IRS/$number_of_irs/g" > "$out"/plugin.cc
 
-cp -rvf vendored "$out"/
+cp -rvf "$my_path"/vendored "$out"/
